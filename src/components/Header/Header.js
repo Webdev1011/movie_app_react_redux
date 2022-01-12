@@ -10,7 +10,8 @@ const Header = () => {
         <div className="logo">Movie App</div>
       </Link>
       <div className="user-image">
-        <img src={user_icon} alt="user" />
+        {/* <img src={user_icon} alt="user" /> */}
+        <i class="fas fa-user-circle"></i>
       </div>
     </div>
   );
