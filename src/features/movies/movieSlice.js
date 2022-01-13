@@ -4,10 +4,9 @@ import { APIKey } from "../../common/apis/MovieApiKey";
 
 export const fetchAsyncMovies = createAsyncThunk(
   "movies/fetchAsyncMovies",
-  async () => {
-    const movieText = "Harry";
+  async (term) => {
     const response = await movieApi.get(
-      `?apiKey=${APIKey}&s=${movieText}&type=movie`
+      `?apiKey=${APIKey}&s=${term}&type=movie`
     );
     return response.data;
   }
@@ -15,10 +14,9 @@ export const fetchAsyncMovies = createAsyncThunk(
 
 export const fetchAsyncShows = createAsyncThunk(
   "movies/fetchAsyncShows",
-  async () => {
-    const seriesText = "Friends";
+  async (term) => {
     const response = await movieApi.get(
-      `?apiKey=${APIKey}&s=${seriesText}&type=series`
+      `?apiKey=${APIKey}&s=${term}&type=series`
     );
     return response.data;
   }
@@ -36,6 +34,7 @@ const initialState = {
   movies: {},
   shows: {},
   selectedMovieOrShow: {},
+  loading: false,
 };
 
 const movieSlice = createSlice({
@@ -47,23 +46,20 @@ const movieSlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchAsyncMovies.pending]: () => {
-      // console.log("pending");
+    [fetchAsyncMovies.pending]: (state) => {
+      return { ...state, loading: true };
     },
     [fetchAsyncMovies.fulfilled]: (state, { payload }) => {
-      // console.log("fetched successfully");
-      return { ...state, movies: payload };
+      return { ...state, movies: payload, loading: false };
     },
-    [fetchAsyncMovies.rejected]: () => {
-      console.log("rejected");
+    [fetchAsyncMovies.rejected]: (state) => {
+      return { ...state, loading: false };
     },
     [fetchAsyncShows.fulfilled]: (state, { payload }) => {
-      // console.log("fetched successfully");
-      return { ...state, shows: payload };
+      return { ...state, shows: payload, loading: false };
     },
     [fetchAsyncMovieOrShowDetail.fulfilled]: (state, { payload }) => {
-      // console.log("fetched successfully");
-      return { ...state, selectedMovieOrShow: payload };
+      return { ...state, selectedMovieOrShow: payload, loading: false };
     },
   },
 });
@@ -71,6 +67,7 @@ const movieSlice = createSlice({
 export const { removeSelectedMovieOrShow } = movieSlice.actions;
 export const getAllMovies = (state) => state.movies.movies;
 export const getAllShows = (state) => state.movies.shows;
+export const getLoadingStatus = (state) => state.movies.loading;
 export const getMovieOrShowsDetail = (state) =>
   state.movies.selectedMovieOrShow;
 export default movieSlice.reducer;
